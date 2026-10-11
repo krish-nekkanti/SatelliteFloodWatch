@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07111f">
+<title>SATELLITE FLOODWATCH | Saving Lives From The Skies</title>
+<link rel="stylesheet" href="style.css">
+<style>
+@property --c1 { syntax: '<color>'; inherits: true; initial-value: #0d1b2a; }
+@property --c2 { syntax: '<color>'; inherits: true; initial-value: #1e3a60; }
+@property --c3 { syntax: '<color>'; inherits: true; initial-value: #3b82f6; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Univers", "Univers LT Std", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #eef9ff, #dfeeff 32%, #cfe6ff);
+  color: #123b63;
+  overflow-x: hidden;
+}
+.app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* Nav */
+.topbar {
+  position: sticky; top: 0; min-height: 64px; padding: 0 26px; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  background: #000 !important;
+  backdrop-filter: blur(8px) !important;
+  border-bottom: 1px solid rgba(255,255,255,.15) !important;
+  box-shadow: 0 14px 30px rgba(100,145,196,.08);
+}
+.brand { display: flex; align-items: center; gap: 0; text-decoration: none; color: #fff; font-weight: 700; font-size: 16px; letter-spacing: 0; }
+.brand span { color: #62d8f5; }
+.site-nav { align-self: stretch; display: flex; align-items: center; gap: 27px; }
+.site-nav a { display: inline-flex; align-items: center; min-height: 100%; border-bottom: 2px solid transparent; color: #fff; font-size: 12px; font-weight: 600; text-decoration: none; transition: color .2s ease, border-color .2s ease; }
+.site-nav a:hover, .site-nav a.active { color: #fff; }
+
+/* Stage */
+.scroll-stage-wrapper { position: relative; height: 500vh; background: #03070d; transition: --c1 2s, --c2 2s, --c3 2s; }
+.sticky-viewport { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.sky-layer, .space-layer { position: absolute; inset: 0; transition: opacity .4s; }
+.sky-layer { background: linear-gradient(180deg, #050b14, var(--c1) 40%, var(--c2) 70%, var(--c3)); }
+.space-layer { background: radial-gradient(circle at 50% 30%, #081222, #020509); opacity: 0; }
+.stars-far, .stars-near { position: absolute; inset: -50%; opacity: 0; pointer-events: none; transition: opacity .6s; }
+.stars-far {
+  background: radial-gradient(1px 1px at 30px 50px, rgba(255,255,255,.4), transparent),
+              radial-gradient(1.5px 1.5px at 150px 120px, rgba(98,216,245,.5), transparent) 0 0/250px 250px;
+}
+.stars-near {
+  background: radial-gradient(2px 2px at 80px 90px, #fff, transparent),
+              radial-gradient(2.5px 2.5px at 200px 180px, #62d8f5, transparent) 0 0/350px 350px;
+} 
+.crossing-satellite {
+  position: absolute; left: 0; width: 96px; height: 40px; opacity: 0; pointer-events: none;
+  animation: satellite-crossing 18s linear infinite paused;
+}
+.crossing-satellite:nth-child(1) { top: 24%; }
+.crossing-satellite:nth-child(2) { top: 62%; animation-duration: 24s; animation-delay: -12s; animation-direction: reverse; }
+.sticky-viewport.first-panel-active .crossing-satellite { opacity: .9; animation-play-state: running; }
+@keyframes satellite-crossing {
+  from { transform: translateX(-120px) rotate(-12deg); }
+  to { transform: translateX(calc(100vw + 120px)) rotate(-12deg); }
+}
+ 
+/* Pa nels */
+.story-panel {
+  position: absolute; left: 50%; width: calc(100% - 40px); max-width: 1400px; text-align: center; z-index: 20;
+   opacity: 0; transform: translate(-50%, -40px); pointer-events: none;
+   transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1);
+ }
+.story-panel.active { opacity: 1; transform: translate(-50%, -70px); pointer-events: auto; }
+#panel-5 { margin-top: 200px; }
+.story-panel h2 { font-size: 42px; font-weight: 700; letter-spacing: -1px; line-height: 1.15; color: #fff; margin-bottom: 16px; }
+.story-panel h2 span { color: #62d8f5; }
+.story-logo { margin-bottom: 22px; color: #fff; font-size: 56px; font-weight: 700; line-height: 1; text-align: center; }
+.story-logo span { color: #62d8f5; }
+@media (max-width: 600px) { .story-logo { font-size: 36px; } }
+.cta-btn {  
+  position: relative; z-index: 30; display: inline-block; margin-top: 24px; padding: 14px 32px;
+  background: #fff; color: #03070d; font-weight: 600; font-size: 14px; letter-spacing: .5px;
+  text-decoration: none; border-radius: 6px; box-shadow: 0 10px 30px rgba(255,255,255,.2);
+  transition: transform .2s, box-shadow .2s;
+}
+.cta-btn:hover { transform: scale(1.03); box-shadow: 0 10px 30px rgba(98,216,245,.3); }
+
+/* Rocket */
+.rocket-container {
+  position: absolute; bottom: 12%; left: 50%; width: 104px; height: 208px; z-index: 10;
+  transform: translateX(-50%); pointer-events: none; will-change: transform, opacity;
+}
+.flame-wrap { transform-origin: 50px 156px; transform: scaleY(var(--thrust, 1)); transition: transform .2s linear; }
+.flame { transform-box: fill-box; transform-origin: 50% 0; animation: flick .1s ease-in-out infinite alternate; }
+.f-mid { animation-duration: .08s; animation-direction: alternate-reverse; }
+.f-inner { animation-duration: .06s; }
+.f-core { animation-name: coreFlick; animation-duration: .09s; }
+.flame-glow { animation: glowPulse .25s ease-in-out infinite alternate; }
+.spark { opacity: 0; animation: sparkFall .7s linear infinite; }
+.s1 { --dx: -9px; } .s2 { --dx: 8px; animation-delay: .18s; } .s3 { --dx: -6px; animation-delay: .35s; } .s4 { --dx: 10px; animation-delay: .52s; }
+@keyframes flick { from { transform: scale(.92,.85) skewX(-3deg); } to { transform: scale(1.08,1.18) skewX(3deg); } }
+@keyframes coreFlick { from { transform: scale(.9,.85); opacity: .85; } to { transform: scale(1.1,1.2); opacity: 1; } }
+@keyframes glowPulse { from { opacity: .55; } to { opacity: .95; } }
+@keyframes sparkFall { from { opacity: 1; } to { opacity: 0; transform: translate(var(--dx), 55px); } }
+
+/* Globe + satellite */
+.satellites-container {
+  position: absolute; top: 25%; left: 50%; width: min(380px, 92vw); z-index: 10;
+  transform: translate(-50%, -50%) scale(.4); opacity: 0; pointer-events: none; will-change: transform, opacity;
+}
+.satellites-container svg { display: block; width: 100%; height: auto; overflow: visible; }
+.land { animation: globeSpin 26s linear infinite; }
+.clouds { animation: globeSpin 17s linear infinite; }
+.led { animation: ledBlink 1s steps(2) infinite; }
+.beam { animation: beamDash .5s linear infinite; }
+@keyframes globeSpin { to { transform: translateX(180px); } }
+@keyframes ledBlink { 50% { opacity: .15; } }
+@keyframes beamDash { to { stroke-dashoffset: -14; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+
+/* Footer */
+.app-footer {
+  position: relative; z-index: 100; background: #03070d; padding: 30px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid rgba(255,255,255,.1); font-size: 11px; letter-spacing: 1px; color: #64748b;
+}
+</style>
+</head>
+
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="index.html">SATELLITE <span>FLOODWATCH</span></a>
+    <nav class="site-nav">
+      <a class="active" href="index.html">Home</a>
+      <a href="explorer.html">Flood Map</a>
+      <a href="about.html">About Us</a>
+    </nav>
+  </header>
+
+  <div class="scroll-stage-wrapper" id="scroll-wrapper">
+    <div class="sticky-viewport">
+      <div class="sky-layer" id="sky"></div>
+      <div class="space-layer" id="space">
+        <div class="stars-far" id="starsFar"></div>
+        <div class="stars-near" id="starsNear"></div>
+      </div>
+
+      <div class="crossing-satellites" aria-hidden="true">
+        <svg class="crossing-satellite" viewBox="0 0 120 48">
+          <g stroke="#9fd3ff" stroke-width="1.5">
+            <rect x="3" y="9" width="35" height="30" rx="2" fill="#1d4ed8" />
+            <path d="M14 9v30M26 9v30M3 19h35M3 29h35" />
+            <rect x="82" y="9" width="35" height="30" rx="2" fill="#1d4ed8" />
+            <path d="M93 9v30M105 9v30M82 19h35M82 29h35" />
+            <path d="M38 24h10l5-7h14l5 7h10v8H38z" fill="#d9dee7" />
+            <circle cx="60" cy="24" r="4" fill="#62d8f5" />
+          </g>
+        </svg>
+        <svg class="crossing-satellite" viewBox="0 0 120 48">
+          <g stroke="#9fd3ff" stroke-width="1.5">
+            <rect x="3" y="9" width="35" height="30" rx="2" fill="#1d4ed8" />
+            <path d="M14 9v30M26 9v30M3 19h35M3 29h35" />
+            <rect x="82" y="9" width="35" height="30" rx="2" fill="#1d4ed8" />
+            <path d="M93 9v30M105 9v30M82 19h35M82 29h35" />
+            <path d="M38 24h10l5-7h14l5 7h10v8H38z" fill="#d9dee7" />
+            <circle cx="60" cy="24" r="4" fill="#62d8f5" />
+          </g>
+        </svg>
+      </div>
+
+      <div class="story-panel active" id="panel-1" data-step="0">
+        <div class="story-logo">SATELLITE <span>FLOODWATCH</span></div>
+        <h2>Using Satellite Data to <span>Find Safe Housing</span></h2>
+      </div>
+      <div class="story-panel" id="panel-5" data-step="4">
+        <h2>Saving Lives <span>From The Skies.</span></h2>
+        <a class="cta-btn" href="explorer.html">Launch Flood Map ↗</a>
+      </div>
+
+      <div class="rocket-container" id="rocket">
+        <svg viewBox="0 0 100 200" width="100%" height="100%" style="overflow:visible">
+          <defs>
+            <linearGradient id="flameOuter" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7a18"/><stop offset="1" stop-color="#ff1f1f" stop-opacity="0"/></linearGradient>
+            <linearGradient id="flameMid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb300"/><stop offset="1" stop-color="#ff6a00" stop-opacity="0"/></linearGradient>
+            <linearGradient id="flameInner" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff7b0"/><stop offset="1" stop-color="#ffd400" stop-opacity="0"/></linearGradient>
+            <filter id="flameGlow" x="-100%" y="-50%" width="300%" height="250%"><feGaussianBlur stdDeviation="3"/></filter>
+          </defs>
+          <g class="flame-wrap">
+            <ellipse class="flame-glow" cx="50" cy="175" rx="20" ry="32" fill="#ff7a18" filter="url(#flameGlow)"/>
+            <path class="flame f-outer" d="M38 156 C34 175 44 200 50 225 C56 200 66 175 62 156 Z" fill="url(#flameOuter)"/>
+            <path class="flame f-mid" d="M42 156 C40 172 46 190 50 210 C54 190 60 172 58 156 Z" fill="url(#flameMid)"/>
+            <path class="flame f-inner" d="M45 156 C44 168 48 180 50 195 C52 180 56 168 55 156 Z" fill="url(#flameInner)"/>
+            <ellipse class="flame f-core" cx="50" cy="161" rx="4" ry="8" fill="#fff"/>
+            <circle class="spark s1" cx="46" cy="170" r="1.6" fill="#ffd54f"/>
+            <circle class="spark s2" cx="54" cy="172" r="1.3" fill="#ff9800"/>
+            <circle class="spark s3" cx="50" cy="168" r="1.8" fill="#fff59d"/>
+            <circle class="spark s4" cx="44" cy="174" r="1.2" fill="#ff7043"/>
+          </g>
+          <path d="M38 150 L62 150 L58 158 L42 158 Z" fill="#1d3044" stroke="#1d3044" stroke-width="2"/>
+          <path d="M50 10 C30 40 30 120 30 150 L70 150 C70 120 70 40 50 10 Z" fill="#fff" stroke="#1d3044" stroke-width="2"/>
+          <path d="M50 10 C40 25 30 40 30 40 L70 40 C70 40 60 25 50 10 Z" fill="#ff5252"/>
+          <circle cx="50" cy="75" r="9" fill="#07111f" stroke="#62d8f5" stroke-width="2.5"/>
+          <circle cx="50" cy="75" r="5" fill="#62d8f5"/>
+          <path d="M30 130 L12 160 L30 150 Z M70 130 L88 160 L70 150 Z" fill="#ff5252"/>
+        </svg>
+      </div>
+
+      <div class="satellites-container" id="satellites">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="ocean" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#5ccfff"/><stop offset=".45" stop-color="#1769c9"/><stop offset="1" stop-color="#0a2a66"/></radialGradient>
+            <radialGradient id="shade" cx="32%" cy="28%" r="85%"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+            <radialGradient id="atmo" cx="50%" cy="50%" r="50%"><stop offset=".8" stop-color="#62d8f5" stop-opacity=".55"/><stop offset="1" stop-color="#62d8f5" stop-opacity="0"/></radialGradient>
+            <clipPath id="globeClip"><circle cx="200" cy="130" r="80"/></clipPath>
+            <g id="lands">
+              <path d="M130 95 C140 80 165 78 172 92 C178 104 165 112 168 124 C160 135 142 128 136 114 C128 108 124 100 130 95 Z"/>
+              <path d="M205 70 C222 64 245 72 250 86 C256 98 240 104 232 100 C226 112 214 108 210 96 C200 90 198 76 205 70 Z"/>
+              <path d="M215 135 C230 128 252 136 256 152 C258 168 244 180 232 176 C220 170 212 150 215 135 Z"/>
+              <path d="M150 150 C158 146 170 152 168 164 C166 176 154 180 148 170 C144 162 144 154 150 150 Z"/>
+              <path d="M262 108 C270 104 280 110 278 120 C274 126 264 124 262 118 Z"/>
+            </g>
+            <g id="cloudTile">
+              <ellipse cx="150" cy="85" rx="22" ry="5"/><ellipse cx="235" cy="120" rx="26" ry="6"/>
+              <ellipse cx="180" cy="165" rx="20" ry="4.5"/><ellipse cx="265" cy="75" rx="15" ry="4"/>
+            </g>
+          </defs>
+
+          <g transform="rotate(-16 200 130)">
+            <path d="M30 130 A170 40 0 0 1 370 130" fill="none" stroke="#62d8f5" stroke-opacity=".28" stroke-width="1.2" stroke-dasharray="4 5"/>
+            <g id="satBack"></g>
+          </g>
+
+          <circle cx="200" cy="130" r="98" fill="url(#atmo)"/>
+          <g clip-path="url(#globeClip)">
+            <circle cx="200" cy="130" r="80" fill="url(#ocean)"/>
+            <g class="land" fill="#4caf6a" stroke="#2e7d4a" stroke-width=".8">
+              <use href="#lands" x="-180"/><use href="#lands"/><use href="#lands" x="180"/>
+            </g>
+            <g class="clouds" fill="#fff" opacity=".3">
+              <use href="#cloudTile" x="-180"/><use href="#cloudTile"/><use href="#cloudTile" x="180"/>
+            </g>
+            <circle cx="200" cy="130" r="80" fill="url(#shade)"/>
+          </g>
+          <circle cx="200" cy="130" r="80" fill="none" stroke="#8fdcff" stroke-opacity=".5"/>
+
+          <g transform="rotate(-16 200 130)">
+            <path d="M370 130 A170 40 0 0 1 30 130" fill="none" stroke="#62d8f5" stroke-opacity=".75" stroke-width="1.4"/>
+            <g id="satFront">
+              <line id="beam" class="beam" stroke="#7fd0ff" stroke-width="1.6" stroke-dasharray="3 4" stroke-linecap="round" opacity="0"/>
+              <g id="sat">
+                <rect x="-27" y="-1.5" width="11" height="3" fill="#9aa7b8"/>
+                <rect x="16" y="-1.5" width="11" height="3" fill="#9aa7b8"/>
+                <rect x="-71" y="-11" width="44" height="22" rx="1.5" fill="#1d4ed8" stroke="#9fd3ff" stroke-width=".8"/>
+                <path d="M-56.3 -11V11M-41.7 -11V11M-71 0H-27" stroke="#9fd3ff" stroke-width=".6" opacity=".8"/>
+                <rect x="-71" y="-11" width="44" height="6" fill="#fff" opacity=".14"/>
+                <rect x="27" y="-11" width="44" height="22" rx="1.5" fill="#1d4ed8" stroke="#9fd3ff" stroke-width=".8"/>
+                <path d="M41.7 -11V11M56.3 -11V11M27 0H71" stroke="#9fd3ff" stroke-width=".6" opacity=".8"/>
+                <rect x="27" y="-11" width="44" height="6" fill="#fff" opacity=".14"/>
+                <path d="M-5 13 L5 13 L3 18 L-3 18 Z" fill="#6b7686"/>
+                <rect x="-16" y="-13" width="32" height="26" rx="3" fill="#d9dee7" stroke="#8d99ab"/>
+                <rect x="-16" y="-13" width="32" height="7" rx="3" fill="#e2b04a"/>
+                <rect x="-16" y="6" width="32" height="7" rx="3" fill="#c8923a"/>
+                <circle r="5" fill="#0b1b3a" stroke="#62d8f5" stroke-width="1.2"/>
+                <circle r="2" fill="#62d8f5"/>
+                <line x1="0" y1="-13" x2="0" y2="-18" stroke="#9aa7b8" stroke-width="1.6"/>
+                <path d="M-10 -23 Q0 -14 10 -23 Z" fill="#e8edf5" stroke="#8d99ab"/>
+                <line x1="0" y1="-22" x2="0" y2="-31" stroke="#9aa7b8"/>
+                <circle class="led" cx="0" cy="-31" r="1.8" fill="#ff5a5a"/>
+              </g>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+  
+    <span>SAVING LIVES FROM THE SKIES</span>
+  </footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const wrapper = $('scroll-wrapper'), sky = $('sky'), space = $('space'),
+      starsFar = $('starsFar'), starsNear = $('starsNear'),
+      rocket = $('rocket'), sats = $('satellites');
+const panels = [...document.querySelectorAll('.story-panel')];
+const stickyViewport = wrapper.querySelector('.sticky-viewport');
+const clamp = n => Math.min(1, Math.max(0, n));
+
+function update() {
+  const p = clamp(-wrapper.getBoundingClientRect().top / (wrapper.offsetHeight - innerHeight));
+  const t1 = clamp((p - 0.3) / 0.3);   // sky -> space
+  const t2 = clamp((p - 0.6) / 0.22);  // rocket out, globe in
+
+  const step = Math.min(Math.floor(p * 5), 4);
+  stickyViewport.classList.toggle('first-panel-active', step === 0);
+  panels.forEach(el => el.classList.toggle('active', +el.dataset.step === step));
+
+  sky.style.opacity = 1 - t1;
+  space.style.opacity = t1;
+  starsFar.style.opacity = p < 0.6 ? t1 * 0.7 : 1;
+  starsNear.style.opacity = t1;
+  starsFar.style.transform = `translateY(${t1 * -40}px)`;
+  starsNear.style.transform = `translateY(${t1 * -80}px)`;
+
+  const y = (p < 0.3 ? -p * 500 : p < 0.6 ? -150 - t1 * 450 : -600 - t2 * 350) * 1.5;
+  const scale = p < 0.6 ? 1 - t1 * 0.25 : 0.75;
+  rocket.style.setProperty('--thrust', p < 0.6 ? 0.8 + p * 0.9 : 0.5);
+  rocket.style.opacity = Math.min(p * 8, 1) * (1 - t2);
+  rocket.style.transform = `translateX(-50%) translateY(${y}px) rotate(${t2 * 60}deg) scale(${scale})`;
+
+  sats.style.opacity = t2;
+  sats.style.transform = `translate(-50%, -50%) scale(${0.75 + t2 * 0.25})`;
+}
+
+let ticking = false;
+addEventListener('scroll', () => {
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => { update(); ticking = false; });
+}, { passive: true });
+update();
+
+/* Satellite orbit */
+const sat = $('sat'), satBack = $('satBack'), satFront = $('satFront'), beam = $('beam');
+const CX = 200, CY = 130, A = 170, B = 40;
+let angle = 0, last = performance.now();
+
+function orbit(now) {
+  angle += Math.min((now - last) / 1000, 0.1) * 0.55;
+  last = now;
+
+  const s = Math.sin(angle);
+  const x = CX - A * Math.cos(angle);
+  const y = CY + B * s;
+  const front = s > 0;
+
+  sat.setAttribute('transform', `translate(${x} ${y}) scale(${0.4 + 0.18 * (0.5 + 0.5 * s)})`);
+  const layer = front ? satFront : satBack;
+  if (sat.parentNode !== layer) layer.appendChild(sat);
+
+  beam.setAttribute('opacity', front ? 0.8 : 0);
+  if (front) {
+    beam.setAttribute('x1', x);
+    beam.setAttribute('y1', y + 8);
+    beam.setAttribute('x2', x + (CX - x) * 0.52);
+    beam.setAttribute('y2', y + (CY - y) * 0.52);
+  }
+  requestAnimationFrame(orbit);
+}
+requestAnimationFrame(orbit);
+
+/* Sky gradient palettes, every 3s */
+const palettes = [
+  ['#0d1b2a', '#1e3a60', '#3b82f6'],
+  ['#1a0f2e', '#4a1d6b', '#c026d3'],
+  ['#0b2a2a', '#0f5c5c', '#14b8a6'],
+  ['#2a1408', '#7a2e12', '#f97316'],
+  ['#0f1f2e', '#1d4f6b', '#38bdf8']
+];
+let i = 0;
+setInterval(() => {
+  i = (i + 1) % palettes.length;
+  palettes[i].forEach((c, n) => wrapper.style.setProperty(`--c${n + 1}`, c));
+}, 3000);
+</script>
+</body>
+</html>

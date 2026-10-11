@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#eaf6ff">
+    <meta name="description" content="Data sources and attribution used by floodwatch.">
+    <title>Sources | Satellite FloodWatch</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .sources-content { display: grid; gap: 14px; }
+        .source-record { max-width: none; }
+        .source-record .source-use { margin: 10px 0 0; color: #34577e; font-size: 12px; font-weight: 600; }
+        .sources-note { max-width: none; }
+    </style>
+</head>
+<body class="content-page sources-page">
+    <div class="app-shell">
+        <header class="topbar">
+            <a class="brand" href="index.html" aria-label="floodwatch home">
+                <div class="brand-text">
+                    <div class="brand-name">SATELLITE <span>FLOODWATCH</span></div>
+                </div>
+            </a>
+            <nav class="site-nav" aria-label="Main navigation">
+                <a href="index.html">Home</a>
+                <a href="explorer.html">Flood Map</a>
+                <a href="about.html">About Us</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="about-heading">
+                <div class="section-index">DATA &amp; ATTRIBUTION</div>
+                <h1>Sources</h1>
+                <p>
+                    Satellite Floodwatch combines a mapped flood-hazard layer with terrain,
+                    weather, river, alert, and news data. Each source is listed
+                    below with how it is used. Open a source for its own data
+                    and technical details.
+                </p>
+            </section>
+
+            <section class="sources-content">
+
+                <article class="source-record">
+                    <div class="section-index">FLOOD HAZARD MODEL</div>
+                    <h2>Global 100-year river-flood hazard</h2>
+                    <p>
+                        This ArcGIS MapServer provides the global modeled flood-hazard
+                        tiles displayed in the Flood Map. The map is intended for broad
+                        exploration and preliminary planning, not parcel-level decisions
+                        or emergency use.
+                    </p>
+                    <p class="source-use">Used for: the flood-hazard overlay and the "in a mapped flood zone?" check.</p>
+                    <a class="source-link"
+                       href="https://tiles.arcgis.com/tiles/RTK5Unh1Z71JKIiR/arcgis/rest/services/WRF_2024_GLO_I3_2/MapServer"
+                       target="_blank" rel="noopener noreferrer">OPEN ARCGIS MAP SERVICE ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">SATELLITE IMAGERY</div>
+                    <h2>Esri World Imagery</h2>
+                    <p>
+                        Basemap imagery © Esri, Maxar, Earthstar Geographics, and the GIS
+                        user community.
+                    </p>
+                    <p class="source-use">Used for: the satellite basemap on the main map and the rainfall mini-map.</p>
+                    <a class="source-link"
+                       href="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
+                       target="_blank" rel="noopener noreferrer">OPEN ESRI SERVICE ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">TERRAIN</div>
+                    <h2>ASTER Global Digital Elevation Model</h2>
+                    <p>
+                        A 30 m elevation model produced from NASA's Terra satellite and
+                        Japan's METI, served through OpenTopoData. A global terrain
+                        dataset is used as a fallback where ASTER has no value. Elevation
+                        error is roughly ±10 m, and the data is a surface model, so
+                        trees and buildings can be included.
+                    </p>
+                    <p class="source-use">Used for: ground elevation and the low-lying terrain check.</p>
+                    <a class="source-link" href="https://www.opentopodata.org"
+                       target="_blank" rel="noopener noreferrer">OPEN OPENTOPODATA ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">OBSERVED RAINFALL</div>
+                    <h2>NASA POWER</h2>
+                    <p>
+                        Daily precipitation derived from NASA satellite and reanalysis
+                        data. Observations lag real time by several days.
+                    </p>
+                    <p class="source-use">Used for: recent observed rainfall.</p>
+                    <a class="source-link" href="https://power.larc.nasa.gov"
+                       target="_blank" rel="noopener noreferrer">OPEN NASA POWER ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">WEATHER FORECAST</div>
+                    <h2>Open-Meteo Forecast API</h2>
+                    <p>
+                        Open-weather-model forecasts of daily precipitation. Forecasts are
+                        less certain beyond about three days.
+                    </p>
+                    <p class="source-use">Used for: rain over the past 3 and next 7 days, and the 7-day outlook.</p>
+                    <a class="source-link" href="https://open-meteo.com"
+                       target="_blank" rel="noopener noreferrer">OPEN OPEN-METEO ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">RIVER DISCHARGE</div>
+                    <h2>GloFAS via the Open-Meteo Flood API</h2>
+                    <p>
+                        The Global Flood Awareness System (Copernicus / ECMWF) models river
+                        discharge at about 5 km resolution. Small streams may not be
+                        represented.
+                    </p>
+                    <p class="source-use">Used for: river flow compared with normal, now and in the forecast.</p>
+                    <a class="source-link" href="https://global-flood.emergency.copernicus.eu"
+                       target="_blank" rel="noopener noreferrer">OPEN GLOFAS ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">OFFICIAL ALERTS (US)</div>
+                    <h2>US National Weather Service</h2>
+                    <p>
+                        Active flood warnings, watches, and advisories for the exact point
+                        selected. Coverage is limited to the United States.
+                    </p>
+                    <p class="source-use">Used for: official flood alerts. An active warning forces a HIGH status.</p>
+                    <a class="source-link" href="https://www.weather.gov/documentation/services-web-api"
+                       target="_blank" rel="noopener noreferrer">OPEN NWS API ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">FLOOD &amp; CYCLONE EVENTS</div>
+                    <h2>GDACS</h2>
+                    <p>
+                        The Global Disaster Alert and Coordination System, a UN and
+                        European Commission framework, lists flood events and tropical
+                        cyclones with alert levels.
+                    </p>
+                    <p class="source-use">Used for: recent flood events within 300 km and the storm list.</p>
+                    <a class="source-link" href="https://www.gdacs.org"
+                       target="_blank" rel="noopener noreferrer">OPEN GDACS ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">SATELLITE RAINFALL MAP</div>
+                    <h2>NASA GPM IMERG via NASA GIBS</h2>
+                    <p>
+                        Near-real-time satellite precipitation estimates delivered through
+                        NASA's Global Imagery Browse Services. Data typically runs several
+                        hours behind real time.
+                    </p>
+                    <p class="source-use">Used for: the rainfall layer in the Rainfall &amp; Storms mini-map.</p>
+                    <a class="source-link" href="https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api"
+                       target="_blank" rel="noopener noreferrer">OPEN NASA GIBS ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">NEWS HEADLINES</div>
+                    <h2>GDELT Project</h2>
+                    <p>
+                        GDELT indexes news from around the world. floodwatch shows
+                        flood-related headlines, links to the original publishers, and
+                        labels articles from a vetted list of outlets. Other outlets are
+                        marked as not verified. Headlines are context only and are not
+                        part of the risk score.
+                    </p>
+                    <p class="source-use">Used for: the Recent Flood Reporting panel.</p>
+                    <a class="source-link" href="https://www.gdeltproject.org"
+                       target="_blank" rel="noopener noreferrer">OPEN GDELT ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">PLACE SEARCH</div>
+                    <h2>OpenStreetMap Nominatim</h2>
+                    <p>
+                        Place search and reverse geocoding. Data © OpenStreetMap
+                        contributors, available under the Open Database License.
+                    </p>
+                    <p class="source-use">Used for: searching locations and naming clicked points.</p>
+                    <a class="source-link" href="https://www.openstreetmap.org/copyright"
+                       target="_blank" rel="noopener noreferrer">OPEN OPENSTREETMAP COPYRIGHT ↗</a>
+                </article>
+
+                <article class="source-record">
+                    <div class="section-index">MAP LIBRARY</div>
+                    <h2>Leaflet</h2>
+                    <p>An open-source JavaScript library for interactive maps.</p>
+                    <p class="source-use">Used for: both maps on the Flood Map page.</p>
+                    <a class="source-link" href="https://leafletjs.com"
+                       target="_blank" rel="noopener noreferrer">OPEN LEAFLET ↗</a>
+                </article>
+
+
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <a href="explorer.html">FLOOD MAP ↗</a>
+        </footer>
+    </div>
+</body>
+</html>

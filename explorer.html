@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07111f">
+    <title>Flood Map | Satellite Floodwatch</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Full-Screen Aerospace Loading Gate -->
+    <div id="explorer-loader"
+        style="position: fixed; inset: 0; background: linear-gradient(180deg, #edf9ff 0%, #dfeeff 35%, #cfe6ff 100%); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Universe', sans-serif; transition: opacity 0.6s ease;">
+        <div style="font-size: 28px; font-weight: 700; color: #123b63; margin-bottom: 20px;">Loading Flood Map...</div>
+        <div
+            style="width: 200px; height: 2px; background: rgba(255,255,255,0.1); position: relative; overflow: hidden;">
+            <div id="loader-bar"
+                style="position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: #62d8f5; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);">
+            </div>
+        </div>
+    </div>
+
+    <!-- Rest of your explorer.html layout (map, panels, etc.) -->
+    <div class="app-shell">
+        <header class="topbar">
+            <a class="brand" href="index.html">
+                <div class="brand-text">
+                    <div class="brand-name">SATELLITE <span>FLOODWATCH</span></div>
+                </div>
+            </a>
+            <nav class="site-nav" aria-label="Main navigation">
+                <a href="index.html">Home</a>
+                <a class="active" href="explorer.html" aria-current="page">Flood Map</a>
+                <a href="about.html">About Us</a>
+            </nav>
+        </header>
+
+        <main class="workspace">
+            <aside class="sidebar">
+
+                <h1>Using The<br>Skies To <span>Protect Lives.</span></h1>
+                <p class="intro">Using satellite imagery and hydrological data to calculate safe housing altitude and
+                    terrain elevation</p>
+
+                <form id="search-form" class="search-box">
+                    <span class="search-icon">⌕</span>
+                    <input id="location-search" type="search" placeholder="Enter your location" autocomplete="off"
+                        aria-label="Search a location">
+                    <button type="submit" aria-label="Search">→</button>
+                </form>
+                <div id="search-status" class="search-status">
+                    Search for a city, address, or ZIP code
+                </div>
+
+                <div class="map-legend">
+                    <div class="legend-title">FLOOD HAZARD</div>
+                    <div class="legend-gradient"></div>
+                    <div class="legend-labels">
+                        <span>Lower mapped hazard</span>
+                        <span>Higher mapped hazard</span>
+                    </div>
+                    <div class="legend-note">
+                        Colors reflect the source layer's symbology, not a
+                        parcel-level safety determination.
+                    </div>
+                </div>
+
+                <div class="section-heading layer-heading">
+                    <span>MAP LAYERS</span>
+                </div>
+                <div class="layer-toggle" role="group" aria-label="Map layer">
+                    <button class="layer-toggle-button" type="button" data-layer-mode="satellite" aria-pressed="false">
+                        Satellite
+                    </button>
+                    <button class="layer-toggle-button active" type="button" data-layer-mode="flood"
+                        aria-pressed="true">
+                        Flood Hazard
+                    </button>
+                </div>
+            </aside>
+
+            <section class="map-section">
+                <div class="map-topline">
+                    <div>
+                        <div class="map-label">GLOBAL FLOOD MAP</div>
+                        <div class="map-subtitle" id="map-location">Earth · Global view</div>
+                    </div>
+                    <button id="reset-view" class="reset-button">↗ RESET MAP</button>
+                </div>
+                <div id="map">
+                    <div class="map-loading">INITIALIZING EARTH OBSERVATION...</div>
+                </div>
+                <div class="map-coordinates" aria-label="Selected location coordinates">
+                    <span>Selected Location</span>
+                    <span id="coordinates">LAT 0.0000° · LON 0.0000°</span>
+                </div>
+            </section>
+
+            <aside class="details-panel">
+
+                <h2>Location Info</h2>
+                <p class="panel-intro">
+                    Select a point on the map to inspect its elevation
+                    and safe housing altitude requirements.
+                </p>
+                <div class="selected-location">
+                    <div>
+                        <strong id="selected-name">Selected Coordinates</strong>
+                        <div id="selected-coordinates" class="muted">LAT 20.0000° N · LON 0.0000° E</div>
+                    </div>
+                </div>
+                <div class="location-facts" aria-label="Location information">
+                    <div class="location-fact">
+                        <span>Ground Elevation</span>
+                        <strong id="metric-elevation">Select a point</strong>
+                    </div>
+                    <div class="location-fact">
+                        <span>Safe Housing Altitude (LFE)</span>
+                        <strong id="metric-lfe">Pending query</strong>
+                    </div>
+                    <div class="location-fact flood-fact">
+                        <span>Model Assessment</span>
+                        <div>
+                            <strong id="metric-risk">Not evaluated</strong>
+                            <small id="metric-recommendation">Click map to run dynamic hydrological engine.</small>
+                        </div>
+                    </div>
+                    <div class="section-heading"><span>RECENT FLOOD REPORTING</span></div>
+                    <div id="news-box"></div>
+                    <div class="section-heading"><span>RAINFALL RADAR &amp; STORMS</span></div>
+                    <div id="radar-mini"></div>
+                    <div id="storm-list" class="muted">Checking active storms…</div>
+                       <div id="rain-status" class="muted">Rainfall: NASA GPM IMERG via <a href="https://earthdata.nasa.gov/gibs" target="_blank" rel="noopener">NASA GIBS</a> (near-real-time, about 4–6 hours behind)</div>
+                    <div class="section-heading"><span>FLOOD CHECK</span></div>
+                    <div id="risk-pipeline"></div>
+                    <div class="section-heading"><span>WHY THIS RESULT</span></div>
+                    <div id="signal-breakdown"></div>
+                </div>
+                <a class="source-link" href="sources.html">
+                    VIEW FLOOD DATA SOURCES ↗
+                </a>
+            </aside>
+        </main>
+
+    </div>
+    <!-- Full-Screen Aerospace Loading Gate -->
+
+
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+        window.addEventListener('load', () => {
+            const bar = document.getElementById('loader-bar');
+            const loader = document.getElementById('explorer-loader');
+
+            if (bar) bar.style.width = '100%';
+
+            // Failsafe: Automatically dismiss the loader after 1.5 seconds max
+            setTimeout(() => {
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 600);
+                }
+            }, 1500);
+        });
+    </script>
+</body>
+
+</html>
